@@ -4,6 +4,7 @@ import { extractSongmid, fetchLxLyric, MusicQuality, normalizeMusicQuality, norm
 import { badRequest, internalError } from '@/lib/music-v2-api';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 const PLAY_META_CACHE_TTL_MS = 2 * 60 * 60 * 1000;
 

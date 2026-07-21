@@ -8,6 +8,7 @@ import {
 } from '@/lib/netdisk-check-task';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {

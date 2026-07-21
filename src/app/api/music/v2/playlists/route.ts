@@ -5,6 +5,7 @@ import { db } from '@/lib/db';
 import { badRequest, getMusicV2Username, internalError, unauthorized } from '@/lib/music-v2-api';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const username = await getMusicV2Username(request);

@@ -5,6 +5,7 @@ import { getBookTtsConfig, synthesizeBookTts } from '@/lib/book-tts';
 import { getAuthorizedBooksUsername } from '../../_utils';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 type SynthesizePayload = {
   sourceId?: string;

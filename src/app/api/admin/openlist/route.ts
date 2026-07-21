@@ -13,6 +13,7 @@ import {
 } from '@/lib/openlist-path-meta';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 /**
  * 清理字符串中的 BOM 和其他不可见字符

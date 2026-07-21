@@ -7,6 +7,7 @@ import { getConfig } from '@/lib/config';
 import { PansouLink, searchPansou } from '@/lib/pansou.client';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {

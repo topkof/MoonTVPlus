@@ -7,6 +7,7 @@ import { getStorage } from '@/lib/db';
 import { getTelegramConfig, sendTelegramMessage, setTelegramBotCommands, setTelegramWebhook, TelegramApiError } from '@/lib/telegram';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 
 async function assertAdmin(request: NextRequest) {

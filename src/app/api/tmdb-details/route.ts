@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { getConfig } from '@/lib/config';
 import {
+
+export const dynamic = 'force-dynamic';
   getTMDBImageUrl,
   getTMDBMovieDetails,
   getTMDBTVDetails,

@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getTelegramConfig, getTelegramConfigProblems } from '@/lib/telegram';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const config = await getTelegramConfig();

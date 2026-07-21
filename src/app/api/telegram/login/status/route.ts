@@ -6,6 +6,7 @@ import {
 } from '@/lib/telegram';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   const token = new URL(request.url).searchParams.get('token');
