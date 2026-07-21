@@ -18,13 +18,13 @@ jobs:
 
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'pnpm'
@@ -76,12 +76,9 @@ jobs:
       - name: Configure D1 Database in wrangler.toml
         run: |
           STORAGE_TYPE="${{ secrets.NEXT_PUBLIC_STORAGE_TYPE }}"
-
           if [ "$STORAGE_TYPE" != "d1" ]; then
             echo "Storage type is not d1 (current: $STORAGE_TYPE), removing D1 database configuration"
-            # Remove the entire [[d1_databases]] section including the comment
             sed -i '/^# D1 数据库绑定$/,/^database_id = .*$/d' wrangler.toml
-            # Also remove any remaining [[d1_databases]] block
             sed -i '/^\[\[d1_databases\]\]$/,/^$/{ /^\[\[d1_databases\]\]$/d; /^binding = /d; /^database_name = /d; /^database_id = /d; }' wrangler.toml
             echo "D1 configuration removed from wrangler.toml"
           elif [ -n "${{ secrets.D1_DATABASE_ID }}" ]; then
@@ -94,7 +91,6 @@ jobs:
 
       - name: Update wrangler.toml with environment variables
         run: |
-          # Function to append variable to wrangler.toml if it has a value
           append_var() {
             local var_name=$1
             local var_value=$2
@@ -103,7 +99,6 @@ jobs:
             fi
           }
 
-          # Append all environment variables to wrangler.toml
           append_var "NEXT_PUBLIC_STORAGE_TYPE" "${{ secrets.NEXT_PUBLIC_STORAGE_TYPE }}"
           append_var "NEXT_PUBLIC_SITE_NAME" "${{ secrets.NEXT_PUBLIC_SITE_NAME }}"
           append_var "NEXT_PUBLIC_SEARCH_MAX_PAGE" "${{ secrets.NEXT_PUBLIC_SEARCH_MAX_PAGE }}"
@@ -134,13 +129,13 @@ jobs:
           append_var "KVROCKS_URL" "${{ secrets.KVROCKS_URL }}"
           append_var "INIT_CONFIG" "${{ secrets.INIT_CONFIG }}"
           append_var "CONFIG_SUBSCRIPTION_URL" "${{ secrets.CONFIG_SUBSCRIPTION_URL }}"
-          append_var ENABLE_TVBOX_SUBSCRIBE "${{ secrets.ENABLE_TVBOX_SUBSCRIBE }}"
-          append_var TVBOX_SUBSCRIBE_TOKEN "${{ secrets.TVBOX_SUBSCRIBE_TOKEN }}"
-          append_var WATCH_ROOM_ENABLED "${{ secrets.WATCH_ROOM_ENABLED }}"
-          append_var WATCH_ROOM_EXTERNAL_SERVER_AUTH "${{ secrets.WATCH_ROOM_EXTERNAL_SERVER_AUTH }}"
-          append_var WATCH_ROOM_EXTERNAL_SERVER_URL "${{ secrets.WATCH_ROOM_EXTERNAL_SERVER_URL }}"
-          append_var WATCH_ROOM_SERVER_TYPE "${{ secrets.WATCH_ROOM_SERVER_TYPE }}"
-          
+          append_var "ENABLE_TVBOX_SUBSCRIBE" "${{ secrets.ENABLE_TVBOX_SUBSCRIBE }}"
+          append_var "TVBOX_SUBSCRIBE_TOKEN" "${{ secrets.TVBOX_SUBSCRIBE_TOKEN }}"
+          append_var "WATCH_ROOM_ENABLED" "${{ secrets.WATCH_ROOM_ENABLED }}"
+          append_var "WATCH_ROOM_EXTERNAL_SERVER_AUTH" "${{ secrets.WATCH_ROOM_EXTERNAL_SERVER_AUTH }}"
+          append_var "WATCH_ROOM_EXTERNAL_SERVER_URL" "${{ secrets.WATCH_ROOM_EXTERNAL_SERVER_URL }}"
+          append_var "WATCH_ROOM_SERVER_TYPE" "${{ secrets.WATCH_ROOM_SERVER_TYPE }}"
+
           echo "Updated wrangler.toml:"
           cat wrangler.toml
 
@@ -153,7 +148,6 @@ jobs:
       - name: Run D1 Database Migrations
         run: |
           STORAGE_TYPE="${{ secrets.NEXT_PUBLIC_STORAGE_TYPE }}"
-
           if [ "$STORAGE_TYPE" != "d1" ]; then
             echo "Storage type is not d1 (current: $STORAGE_TYPE), skipping D1 migrations"
             exit 0
@@ -165,14 +159,12 @@ jobs:
           fi
 
           echo "Running D1 database migrations..."
-
           for migration_file in ./migrations/*.sql; do
             if [ -f "$migration_file" ]; then
-              echo "Executing migration: $(basename $migration_file)"
+              echo "Executing migration: $(basename "$migration_file")"
               wrangler d1 execute moontvplus --remote --file="$migration_file" || echo "⚠️ Migration may have been skipped (already applied)"
             fi
           done
-
           echo "✅ Migrations completed"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
