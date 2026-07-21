@@ -122,7 +122,9 @@ function getTursoAdapter(): any {
   }
 
   // 动态导入适配器以避免客户端打包
-  const { TursoAdapter } = require('./turso-adapter');
+  // 使用变量而非字面量路径，防止 bundler 静态分析拉入 @libsql 依赖
+  const tursoModulePath = './turso-adapter';
+  const { TursoAdapter } = require(tursoModulePath);
 
   const tursoUrl = process.env.TURSO_URL;
   const tursoToken = process.env.TURSO_TOKEN;
