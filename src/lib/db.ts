@@ -58,6 +58,11 @@ function createStorage(): IStorage {
       if (typeof window !== 'undefined') {
         throw new Error('D1Storage can only be used on the server side');
       }
+      if (IS_CLOUDFLARE_BUILD) {
+        throw new Error(
+          'D1 storage is disabled for Cloudflare build. Use Upstash instead.'
+        );
+      }
       const d1Adapter = getD1Adapter();
       // 动态导入 D1Storage 以避免客户端打包
       const { D1Storage } = require('./d1.db');
@@ -75,6 +80,11 @@ function createStorage(): IStorage {
       // TursoStorage 只能在服务端使用，客户端会报错
       if (typeof window !== 'undefined') {
         throw new Error('TursoStorage can only be used on the server side');
+      }
+      if (IS_CLOUDFLARE_BUILD) {
+        throw new Error(
+          'Turso storage is disabled for Cloudflare build. Use Upstash instead.'
+        );
       }
       const tursoAdapter = getTursoAdapter();
       // 复用 D1Storage（Turso 基于 libSQL/SQLite，SQL 语法完全兼容）
@@ -105,6 +115,12 @@ function getPostgresAdapter(): any {
  * 适用于 EdgeOne Pages 等无内置数据库的边缘平台
  */
 function getTursoAdapter(): any {
+  if (IS_CLOUDFLARE_BUILD) {
+    throw new Error(
+      'Turso adapter should not be loaded in Cloudflare build when using Upstash.'
+    );
+  }
+
   // 动态导入适配器以避免客户端打包
   const { TursoAdapter } = require('./turso-adapter');
 
@@ -128,6 +144,12 @@ function getTursoAdapter(): any {
  * 生产环境：使用 Cloudflare D1
  */
 function getD1Adapter(): any {
+  if (IS_CLOUDFLARE_BUILD) {
+    throw new Error(
+      'D1 adapter should not be loaded in Cloudflare build when using Upstash.'
+    );
+  }
+
   // 动态导入适配器以避免客户端打包
   const { CloudflareD1Adapter, SQLiteAdapter } = require('./d1-adapter');
 
@@ -174,11 +196,8 @@ function getD1Adapter(): any {
 
   // 开发环境：better-sqlite3
   const Database = require('better-sqlite3');
-  const path = require('path');
 
-  const dbPath =
-    process.env.SQLITE_DB_PATH ||
-    path.join(process.cwd(), '.data', 'moontv.db');
+  const dbPath = process.env.SQLITE_DB_PATH || '.data/moontv.db';
 
   const db = new Database(dbPath);
   db.pragma('journal_mode = WAL'); // 启用 WAL 模式提升性能
